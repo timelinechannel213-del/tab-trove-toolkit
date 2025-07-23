@@ -75,7 +75,7 @@ export const TabManager = () => {
             {tabs.map((tab) => (
               <Card 
                 key={tab.id} 
-                className={`cursor-pointer transition-smooth hover:shadow-chrome ${
+                className={`cursor-pointer transition-all duration-300 ease-smooth hover:shadow-chrome ${
                   tab.active ? "ring-2 ring-primary bg-primary/5" : ""
                 }`}
                 onClick={() => switchTab(tab.id)}
@@ -122,7 +122,7 @@ export const TabManager = () => {
           <h3 className="text-lg font-semibold">Recent History</h3>
           <div className="grid gap-3">
             {history.map((item, index) => (
-              <Card key={index} className="cursor-pointer hover:shadow-chrome transition-smooth">
+              <Card key={index} className="cursor-pointer hover:shadow-chrome transition-all duration-300 ease-smooth">
                 <CardContent className="p-4">
                   <div className="flex items-center gap-3">
                     <Search className="h-4 w-4 text-muted-foreground" />

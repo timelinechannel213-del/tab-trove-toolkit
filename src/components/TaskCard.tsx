@@ -43,7 +43,7 @@ export const TaskCard = ({ task, onCancel }: TaskCardProps) => {
   };
 
   return (
-    <Card className="relative overflow-hidden border-l-4 border-l-primary/20 hover:border-l-primary transition-smooth">
+    <Card className="relative overflow-hidden border-l-4 border-l-primary/20 hover:border-l-primary transition-all duration-300 ease-smooth">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2">

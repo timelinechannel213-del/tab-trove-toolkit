@@ -92,9 +92,9 @@ export default {
 				'glow': 'var(--shadow-glow)',
 				'chrome': 'var(--shadow-chrome)'
 			},
-			transitionProperty: {
-				'smooth': 'var(--transition-smooth)',
-				'bounce': 'var(--transition-bounce)'
+			transitionTimingFunction: {
+				'smooth': 'cubic-bezier(0.4, 0, 0.2, 1)',
+				'bounce': 'cubic-bezier(0.175, 0.885, 0.32, 1.275)'
 			},
 			keyframes: {
 				'accordion-down': {
