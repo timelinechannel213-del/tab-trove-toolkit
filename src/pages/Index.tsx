@@ -94,7 +94,7 @@ const Index = () => {
         <div className="text-center space-y-6 py-8">
           <div className="space-y-4">
             <h1 className="text-4xl md:text-6xl font-bold bg-gradient-chrome bg-clip-text text-transparent">
-              Just type "do" and we'll handle the rest
+              Just type "do" and we'll handle the rest!
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
               Your AI browser assistant that understands natural language and takes actions on your behalf
