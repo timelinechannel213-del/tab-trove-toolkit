@@ -20,37 +20,16 @@ interface Task {
 }
 
 const Index = () => {
-  const [tasks, setTasks] = useState<Task[]>([
-    {
-      id: "1",
-      command: "do search for React tutorials",
-      status: "completed",
-      result: "Found 15 React tutorials and opened top 3 in new tabs",
-      timestamp: new Date(Date.now() - 300000),
-    },
-    {
-      id: "2", 
-      command: "do close all social media tabs",
-      status: "completed",
-      result: "Closed 4 social media tabs (Facebook, Twitter, Instagram, LinkedIn)",
-      timestamp: new Date(Date.now() - 600000),
-    },
-  ]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [currentPageInfo, setCurrentPageInfo] = useState<PageInfo | null>(null);
-  const [isExtensionMode, setIsExtensionMode] = useState(false);
 
   useEffect(() => {
-    const checkExtensionMode = async () => {
-      const extensionMode = isExtension();
-      setIsExtensionMode(extensionMode);
-      
-      if (extensionMode) {
-        const pageInfo = await getPageInfo();
-        setCurrentPageInfo(pageInfo);
-      }
+    const init = async () => {
+      const pageInfo = await getPageInfo();
+      setCurrentPageInfo(pageInfo);
     };
     
-    checkExtensionMode();
+    init();
   }, []);
 
   const executeCommand = async (command: string) => {
@@ -65,36 +44,21 @@ const Index = () => {
     setTasks(prev => [newTask, ...prev]);
 
     try {
-      if (isExtensionMode) {
-        // Execute command through extension
-        const response = await sendMessageToBackground({
-          type: 'EXECUTE_COMMAND',
-          payload: { command, pageInfo: currentPageInfo }
-        });
+      // Execute command through extension
+      const response = await sendMessageToBackground({
+        type: 'EXECUTE_COMMAND',
+        payload: { command, pageInfo: currentPageInfo }
+      });
 
-        const updatedTask: Task = {
-          ...newTask,
-          status: response.success ? "completed" : "failed",
-          result: response.success ? JSON.stringify(response.result) : "Command failed"
-        };
+      const updatedTask: Task = {
+        ...newTask,
+        status: response.success ? "completed" : "failed",
+        result: response.success ? JSON.stringify(response.result) : "Command failed"
+      };
 
-        setTasks(prev => prev.map(task => 
-          task.id === newTask.id ? updatedTask : task
-        ));
-      } else {
-        // Simulate AI processing for web app mode
-        await new Promise(resolve => setTimeout(resolve, 2000));
-
-        const updatedTask: Task = {
-          ...newTask,
-          status: Math.random() > 0.2 ? "completed" : "failed",
-          result: generateMockResult(command),
-        };
-
-        setTasks(prev => prev.map(task => 
-          task.id === newTask.id ? updatedTask : task
-        ));
-      }
+      setTasks(prev => prev.map(task => 
+        task.id === newTask.id ? updatedTask : task
+      ));
     } catch (error) {
       const updatedTask: Task = {
         ...newTask,
@@ -134,27 +98,23 @@ const Index = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-subtle">
+    <div className="w-96 h-[600px] bg-gradient-subtle overflow-hidden">
       <Header />
       
-      <main className="container max-w-7xl mx-auto px-6 py-8 space-y-8">
+      <main className="px-4 py-4 space-y-4 h-full overflow-y-auto">
         {/* Hero Section */}
-        <div className="text-center space-y-6 py-8">
-          <div className="space-y-4">
-            <h1 className="text-4xl md:text-6xl font-bold bg-gradient-chrome bg-clip-text text-transparent">
-              {isExtensionMode ? "Tab Trove Toolkit" : "Just type \"do\" and we'll handle the rest!"}
+        <div className="text-center space-y-6 py-4">
+          <div className="space-y-3">
+            <h1 className="text-2xl font-bold bg-gradient-chrome bg-clip-text text-transparent">
+              Tab Trove Toolkit
             </h1>
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              {isExtensionMode 
-                ? `Execute commands on ${currentPageInfo?.domain || 'any website'} with natural language`
-                : "Your AI browser assistant that understands natural language and takes actions on your behalf"
-              }
+            <p className="text-sm text-muted-foreground">
+              Execute commands on {currentPageInfo?.domain || 'any website'} with natural language
             </p>
-            {isExtensionMode && currentPageInfo && (
-              <div className="text-sm text-muted-foreground bg-card rounded-lg p-3 max-w-md mx-auto border">
-                <p className="font-medium">Current page:</p>
-                <p className="truncate">{currentPageInfo.title}</p>
-                <p className="text-xs truncate">{currentPageInfo.url}</p>
+            {currentPageInfo && (
+              <div className="text-xs text-muted-foreground bg-card rounded-lg p-2 border">
+                <p className="font-medium truncate">{currentPageInfo.title}</p>
+                <p className="text-xs truncate opacity-75">{currentPageInfo.url}</p>
               </div>
             )}
           </div>
@@ -163,77 +123,48 @@ const Index = () => {
         </div>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <Card className="text-center">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-2xl font-bold text-primary">{stats.total}</CardTitle>
-              <CardDescription className="flex items-center justify-center gap-2">
-                <Bot className="h-4 w-4" />
-                Total Commands
-              </CardDescription>
-            </CardHeader>
-          </Card>
-          
-          <Card className="text-center">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-2xl font-bold text-success">{stats.completed}</CardTitle>
-              <CardDescription className="flex items-center justify-center gap-2">
-                <Zap className="h-4 w-4" />
-                Completed
-              </CardDescription>
-            </CardHeader>
-          </Card>
-          
-          <Card className="text-center">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-2xl font-bold text-warning">{stats.processing}</CardTitle>
-              <CardDescription className="flex items-center justify-center gap-2">
-                <Clock className="h-4 w-4" />
-                Processing
-              </CardDescription>
-            </CardHeader>
-          </Card>
+        <div className="grid grid-cols-3 gap-2 text-center">
+          <div className="bg-card rounded-lg p-2 border">
+            <div className="text-lg font-bold text-primary">{stats.total}</div>
+            <div className="text-xs text-muted-foreground">Total</div>
+          </div>
+          <div className="bg-card rounded-lg p-2 border">
+            <div className="text-lg font-bold text-success">{stats.completed}</div>
+            <div className="text-xs text-muted-foreground">Done</div>
+          </div>
+          <div className="bg-card rounded-lg p-2 border">
+            <div className="text-lg font-bold text-warning">{stats.processing}</div>
+            <div className="text-xs text-muted-foreground">Active</div>
+          </div>
         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Recent Tasks */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h2 className="text-2xl font-semibold">Recent Tasks</h2>
-              <Badge variant="secondary" className="text-xs">
-                {tasks.length} tasks
-              </Badge>
-            </div>
-            
-            <div className="space-y-3 max-h-96 overflow-y-auto">
-              {tasks.length > 0 ? (
-                tasks.map((task) => (
-                  <TaskCard
-                    key={task.id}
-                    task={task}
-                    onCancel={cancelTask}
-                  />
-                ))
-              ) : (
-                <Card className="text-center py-8">
-                  <CardContent>
-                    <Bot className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <p className="text-muted-foreground">
-                      No tasks yet. Try giving me a command!
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+        {/* Recent Tasks */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Recent Commands</h2>
+            <Badge variant="secondary" className="text-xs">
+              {tasks.length}
+            </Badge>
+          </div>
+          
+          <div className="space-y-2 max-h-64 overflow-y-auto">
+            {tasks.length > 0 ? (
+              tasks.map((task) => (
+                <TaskCard
+                  key={task.id}
+                  task={task}
+                  onCancel={cancelTask}
+                />
+              ))
+            ) : (
+              <div className="text-center py-8 text-muted-foreground">
+                <Bot className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                <p className="text-sm">No commands yet</p>
+                <p className="text-xs">Try: "scroll to top" or "click first button"</p>
+              </div>
+            )}
           </div>
 
-          {/* Tab Manager */}
-          {!isExtensionMode && (
-            <div className="space-y-4">
-              <TabManager />
-            </div>
-          )}
         </div>
       </main>
     </div>

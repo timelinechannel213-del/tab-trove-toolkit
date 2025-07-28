@@ -1,73 +1,74 @@
-# Welcome to your Lovable project
+# Tab Trove Toolkit - Chrome Extension
 
-## Project info
+## Development Setup
 
-**URL**: https://lovable.dev/projects/13a85525-4223-47c6-9be7-6bad8275d5ba
+1. Run `npm run build` to build the extension
+2. Open Chrome and go to `chrome://extensions/`
+3. Enable "Developer mode" in the top right
+4. Click "Load unpacked" and select the `dist` folder
+5. Pin the extension to your toolbar
 
-## How can I edit this code?
+## Usage
 
-There are several ways of editing your application.
+- **Popup**: Click the extension icon to open the command interface
+- **Keyboard shortcut**: Press `Ctrl+K` (or `Cmd+K` on Mac) on any page to open floating command overlay
+- **Commands**: Type natural language commands like:
+  - "scroll to top"
+  - "click first button" 
+  - "fill form with test data"
+  - "open Gmail in new tab"
 
-**Use Lovable**
+## Chrome Web Store Upload
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/13a85525-4223-47c6-9be7-6bad8275d5ba) and start prompting.
+### Prerequisites
+1. Create a Chrome Web Store developer account ($5 one-time fee)
+2. Prepare store assets:
+   - Icon: 128x128px PNG
+   - Screenshots: 1280x800px or 640x400px
+   - Promotional tile: 440x280px (optional)
 
-Changes made via Lovable will be committed automatically to this repo.
+### Upload Steps
+1. Go to [Chrome Web Store Developer Dashboard](https://chrome.google.com/webstore/devconsole)
+2. Click "Add new item"
+3. Upload the built extension as a ZIP file:
+   ```bash
+   cd dist
+   zip -r tab-trove-toolkit.zip .
+   ```
+4. Fill out the store listing:
+   - **Name**: Tab Trove Toolkit
+   - **Summary**: AI browser assistant for task automation
+   - **Description**: Execute commands on any website using natural language
+   - **Category**: Productivity
+   - **Language**: English
 
-**Use your preferred IDE**
+### Store Listing Content
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+**Description:**
+```
+Tab Trove Toolkit is your AI-powered browser assistant that understands natural language and performs tasks on your behalf.
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+🚀 Features:
+• Execute commands with natural language
+• Keyboard shortcut (Ctrl+K) for quick access
+• Works on any website
+• Task history and status tracking
+• Floating command overlay
 
-Follow these steps:
+💡 Example Commands:
+• "scroll to top" - Instantly scroll to page top
+• "click first button" - Find and click the first button
+• "fill form with test data" - Auto-fill form fields
+• "close social media tabs" - Close distracting tabs
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+Perfect for power users who want to automate repetitive browser tasks and navigate the web more efficiently.
 ```
 
-**Edit a file directly in GitHub**
+**Privacy Policy**: Create a simple privacy policy stating you don't collect user data.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Review Process
+- Initial review: 1-3 business days
+- Updates: Usually faster approval
+- Follow Chrome Web Store policies carefully
 
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/13a85525-4223-47c6-9be7-6bad8275d5ba) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+The extension is now optimized for Chrome Web Store with a compact popup UI!
