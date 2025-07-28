@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "@/components/Header";
 import { CommandInput } from "@/components/CommandInput";
 import { TaskCard } from "@/components/TaskCard";
@@ -7,6 +7,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { Bot, Zap, Globe, Clock } from "lucide-react";
 import { toast } from "sonner";
+import { isExtension, sendMessageToBackground, getPageInfo } from "@/utils/extension";
+import { PageInfo } from "@/types/extension";
 
 interface Task {
   id: string;
@@ -34,6 +36,22 @@ const Index = () => {
       timestamp: new Date(Date.now() - 600000),
     },
   ]);
+  const [currentPageInfo, setCurrentPageInfo] = useState<PageInfo | null>(null);
+  const [isExtensionMode, setIsExtensionMode] = useState(false);
+
+  useEffect(() => {
+    const checkExtensionMode = async () => {
+      const extensionMode = isExtension();
+      setIsExtensionMode(extensionMode);
+      
+      if (extensionMode) {
+        const pageInfo = await getPageInfo();
+        setCurrentPageInfo(pageInfo);
+      }
+    };
+    
+    checkExtensionMode();
+  }, []);
 
   const executeCommand = async (command: string) => {
     const newTask: Task = {
@@ -41,23 +59,53 @@ const Index = () => {
       command,
       status: "processing",
       timestamp: new Date(),
+      url: currentPageInfo?.url
     };
 
     setTasks(prev => [newTask, ...prev]);
 
-    // Simulate AI processing
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    try {
+      if (isExtensionMode) {
+        // Execute command through extension
+        const response = await sendMessageToBackground({
+          type: 'EXECUTE_COMMAND',
+          payload: { command, pageInfo: currentPageInfo }
+        });
 
-    // Simulate different outcomes based on command
-    const updatedTask: Task = {
-      ...newTask,
-      status: Math.random() > 0.2 ? "completed" : "failed",
-      result: generateMockResult(command),
-    };
+        const updatedTask: Task = {
+          ...newTask,
+          status: response.success ? "completed" : "failed",
+          result: response.success ? JSON.stringify(response.result) : "Command failed"
+        };
 
-    setTasks(prev => prev.map(task => 
-      task.id === newTask.id ? updatedTask : task
-    ));
+        setTasks(prev => prev.map(task => 
+          task.id === newTask.id ? updatedTask : task
+        ));
+      } else {
+        // Simulate AI processing for web app mode
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        const updatedTask: Task = {
+          ...newTask,
+          status: Math.random() > 0.2 ? "completed" : "failed",
+          result: generateMockResult(command),
+        };
+
+        setTasks(prev => prev.map(task => 
+          task.id === newTask.id ? updatedTask : task
+        ));
+      }
+    } catch (error) {
+      const updatedTask: Task = {
+        ...newTask,
+        status: "failed",
+        result: "Failed to execute command"
+      };
+
+      setTasks(prev => prev.map(task => 
+        task.id === newTask.id ? updatedTask : task
+      ));
+    }
   };
 
   const generateMockResult = (command: string): string => {
@@ -94,11 +142,21 @@ const Index = () => {
         <div className="text-center space-y-6 py-8">
           <div className="space-y-4">
             <h1 className="text-4xl md:text-6xl font-bold bg-gradient-chrome bg-clip-text text-transparent">
-              Just type "do" and we'll handle the rest!
+              {isExtensionMode ? "Tab Trove Toolkit" : "Just type \"do\" and we'll handle the rest!"}
             </h1>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Your AI browser assistant that understands natural language and takes actions on your behalf
+              {isExtensionMode 
+                ? `Execute commands on ${currentPageInfo?.domain || 'any website'} with natural language`
+                : "Your AI browser assistant that understands natural language and takes actions on your behalf"
+              }
             </p>
+            {isExtensionMode && currentPageInfo && (
+              <div className="text-sm text-muted-foreground bg-card rounded-lg p-3 max-w-md mx-auto border">
+                <p className="font-medium">Current page:</p>
+                <p className="truncate">{currentPageInfo.title}</p>
+                <p className="text-xs truncate">{currentPageInfo.url}</p>
+              </div>
+            )}
           </div>
           
           <CommandInput onExecute={executeCommand} />
@@ -171,9 +229,11 @@ const Index = () => {
           </div>
 
           {/* Tab Manager */}
-          <div className="space-y-4">
-            <TabManager />
-          </div>
+          {!isExtensionMode && (
+            <div className="space-y-4">
+              <TabManager />
+            </div>
+          )}
         </div>
       </main>
     </div>

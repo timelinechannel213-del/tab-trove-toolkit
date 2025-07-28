@@ -1,0 +1,44 @@
+{
+  "manifest_version": 3,
+  "name": "Tab Trove Toolkit",
+  "version": "1.0.0",
+  "description": "AI browser assistant for task automation",
+  "permissions": [
+    "activeTab",
+    "storage",
+    "scripting",
+    "tabs"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "service_worker": "src/background/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["src/content/content.js"]
+    }
+  ],
+  "action": {
+    "default_popup": "index.html",
+    "default_title": "Tab Trove Toolkit"
+  },
+  "commands": {
+    "open-assistant": {
+      "suggested_key": {
+        "default": "Ctrl+K",
+        "mac": "Cmd+K"
+      },
+      "description": "Open AI assistant"
+    }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["src/assets/*"],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
